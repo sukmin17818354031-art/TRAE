@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -64,6 +63,19 @@
             <div class="task-name">
               <label for="taskName">任务名称：</label>
               <input type="text" id="taskName" placeholder="输入任务名称">
+            </div>
+          </div>
+
+          <!-- 下一轮任务信息（仅在休息时间显示） -->
+          <div class="next-task-info" id="nextTaskInfo" style="display: none;">
+            <h3>下一轮任务（休息时间可编辑）</h3>
+            <div class="next-task-name">
+              <label for="nextTaskName">任务名称：</label>
+              <input type="text" id="nextTaskName" placeholder="输入下一轮任务名称">
+            </div>
+            <div class="next-duration">
+              <label for="nextDuration">专注时长（分钟）：</label>
+              <input type="number" id="nextDuration" min="1" max="60" value="25">
             </div>
           </div>
         </div>
@@ -142,149 +154,4 @@
 
   <script src="script.js"></script>
 </body>
-=======
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>番茄钟+任务清单</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/dayjs.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-</head>
-<body>
-  <div class="container">
-    <header>
-      <h1>现在就开始 ！</h1>
-    </header>
-
-    <main>
-      <!-- 番茄钟模块 -->
-      <section class="pomodoro-section">
-        <div class="card">
-          <h2>番茄钟</h2>
-          <div class="timer-container">
-            <div class="timer-display" id="timerDisplay">25:00</div>
-            <div class="timer-controls">
-              <button id="startBtn">开始</button>
-              <button id="pauseBtn">暂停</button>
-              <button id="resetBtn">重置</button>
-            </div>
-          </div>
-
-          <!-- 时长设置 -->
-          <div class="duration-settings">
-            <h3>时长设置</h3>
-            <div class="quick-durations">
-              <button class="duration-btn" data-duration="5">5分钟</button>
-              <button class="duration-btn" data-duration="10">10分钟</button>
-              <button class="duration-btn" data-duration="15">15分钟</button>
-              <button class="duration-btn" data-duration="25">25分钟</button>
-              <button class="duration-btn" data-duration="30">30分钟</button>
-              <button class="duration-btn" data-duration="45">45分钟</button>
-              <button class="duration-btn" data-duration="60">60分钟</button>
-            </div>
-            <div class="custom-duration">
-              <label for="customDuration">自定义时长（分钟）：</label>
-              <input type="number" id="customDuration" min="1" max="60" placeholder="输入时长">
-            </div>
-          </div>
-
-          <!-- 任务信息 -->
-          <div class="task-info">
-            <h3>任务信息</h3>
-            <div class="task-type">
-              <label for="taskType">任务类型：</label>
-              <select id="taskType">
-                <option value="工作">工作</option>
-                <option value="学习">学习</option>
-                <option value="爱好">爱好</option>
-                <option value="其他">其他</option>
-                <option value="自定义">自定义</option>
-              </select>
-              <input type="text" id="customTaskType" placeholder="输入自定义类型" style="display: none;">
-            </div>
-            <div class="task-name">
-              <label for="taskName">任务名称：</label>
-              <input type="text" id="taskName" placeholder="输入任务名称">
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 临时记录本模块 -->
-      <section class="notes-section">
-        <div class="card">
-          <h2>临时记录本</h2>
-          <textarea id="notes" placeholder="记下你的灵光一闪，休息时再去处理吧！"></textarea>
-        </div>
-      </section>
-
-      <!-- 任务清单模块 -->
-      <section class="todo-section">
-        <div class="card">
-          <h2>任务清单</h2>
-          <div class="todo-container">
-            <div class="todo-column">
-              <h3>未完成</h3>
-              <ul id="todoList">
-                <!-- 任务项将通过JavaScript动态添加 -->
-              </ul>
-            </div>
-            <div class="todo-column">
-              <h3>已完成</h3>
-              <ul id="completedList">
-                <!-- 任务项将通过JavaScript动态添加 -->
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 导出筛选模块 -->
-      <section class="export-section">
-        <div class="card">
-          <h2>导出筛选</h2>
-          <div class="export-filters">
-            <div class="filter-group">
-              <label for="startDate">开始日期：</label>
-              <input type="date" id="startDate">
-            </div>
-            <div class="filter-group">
-              <label for="endDate">结束日期：</label>
-              <input type="date" id="endDate">
-            </div>
-            <div class="filter-group">
-              <label for="filterTaskType">任务类型：</label>
-              <select id="filterTaskType">
-                <option value="">全部</option>
-                <option value="工作">工作</option>
-                <option value="学习">学习</option>
-                <option value="爱好">爱好</option>
-                <option value="其他">其他</option>
-              </select>
-            </div>
-            <div class="filter-group">
-              <label for="filterStatus">状态：</label>
-              <select id="filterStatus">
-                <option value="">全部</option>
-                <option value="未完成">未完成</option>
-                <option value="已完成">已完成</option>
-              </select>
-            </div>
-          </div>
-          <button id="exportBtn">导出CSV</button>
-        </div>
-      </section>
-    </main>
-
-    <footer>
-      <p>© 2026 番茄钟+任务清单</p>
-    </footer>
-  </div>
-
-  <script src="script.js"></script>
-</body>
->>>>>>> e4a19ef479c5550c39eac6b9519b7a9560f3615a
 </html>
