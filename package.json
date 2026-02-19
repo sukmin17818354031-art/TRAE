@@ -1,0 +1,24 @@
+{
+  "name": "pomodoro-todo",
+  "version": "1.0.0",
+  "description": "番茄钟+任务清单网页应用",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 3000 -o",
+    "dev": "npx http-server -p 3000 -o"
+  },
+  "keywords": [
+    "pomodoro",
+    "todo",
+    "productivity"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "dependencies": {
+    "dayjs": "^1.11.10",
+    "papaparse": "^5.4.1"
+  }
+}
