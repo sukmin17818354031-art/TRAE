@@ -1,24 +1,27 @@
 {
-  "name": "pomodoro-todo",
+  "name": "ai-chat-backend",
   "version": "1.0.0",
-  "description": "番茄钟+任务清单网页应用",
-  "main": "index.html",
+  "description": "AI Chat Backend for Vercel",
+  "main": "index.js",
   "scripts": {
-    "start": "npx http-server -p 3000 -o",
-    "dev": "npx http-server -p 3000 -o"
-  },
-  "keywords": [
-    "pomodoro",
-    "todo",
-    "productivity"
-  ],
-  "author": "",
-  "license": "MIT",
-  "devDependencies": {
-    "http-server": "^14.1.1"
+    "dev": "node index.js",
+    "start": "node index.js"
   },
   "dependencies": {
-    "dayjs": "^1.11.10",
-    "papaparse": "^5.4.1"
-  }
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.2"
+  },
+  "engines": {
+    "node": "18.x"
+  },
+  "keywords": [
+    "ai",
+    "chat",
+    "vercel",
+    "nodejs"
+  ],
+  "author": "",
+  "license": "MIT"
 }

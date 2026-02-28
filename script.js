@@ -34,6 +34,8 @@ const exportBtn = document.getElementById('exportBtn');
 const nextTaskInfo = document.getElementById('nextTaskInfo');
 const nextTaskName = document.getElementById('nextTaskName');
 const nextDurationInput = document.getElementById('nextDuration');
+const aiFeedback = document.getElementById('aiFeedback');
+const analyzeBtn = document.getElementById('analyzeBtn');
 
 // 初始化
 function init() {
@@ -114,6 +116,9 @@ function bindEventListeners() {
   
   // 导出按钮
   exportBtn.addEventListener('click', exportTasks);
+  
+  // 分析按钮
+  analyzeBtn.addEventListener('click', analyzeFocusData);
 }
 
 // 设置时长
@@ -337,7 +342,7 @@ function startBreakTime() {
 }
 
 // 完成任务
-function completeTask() {
+async function completeTask() {
   if (currentTask) {
     currentTask.status = '已完成';
     currentTask.completedAt = new Date().toISOString();
@@ -346,6 +351,10 @@ function completeTask() {
     
     // 显示撒花动画
     showConfetti();
+    
+    // 获取并显示鼓励话语
+    const encouragement = await getEncouragement();
+    aiFeedback.innerHTML = `<p><strong>🎉 鼓励话语：</strong>${encouragement}</p>`;
   }
 }
 
@@ -521,6 +530,152 @@ function exportTasks() {
     status: filterStatus.value
   };
   localStorage.setItem('filters', JSON.stringify(filters));
+}
+
+// 获取 AI 反馈
+async function getAIFeedback(messages) {
+  try {
+    // 调用后端 API 获取 AI 反馈
+    const response = await fetch('/api/ai-chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ messages })
+    });
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error getting AI feedback:', error);
+    return {
+      error: '获取 AI 反馈失败，请稍后再试'
+    };
+  }
+}
+
+// 分析专注数据
+async function analyzeFocusData() {
+  // 显示加载状态
+  aiFeedback.innerHTML = '<p>正在分析数据，请稍候...</p>';
+  
+  // 获取当天和本周的专注数据
+  const dailyData = getDailyFocusData();
+  const weeklyData = getWeeklyFocusData();
+  
+  // 构建 AI 提示
+  const messages = [
+    {
+      role: 'user',
+      content: `请分析以下专注数据并提供个性化反馈：
+
+当天数据：
+- 总专注时长：${dailyData.totalDuration} 分钟
+- 完成任务数：${dailyData.completedTasks.length}
+- 未完成任务数：${dailyData.incompleteTasks.length}
+- 平均专注时长：${dailyData.avgDuration.toFixed(1)} 分钟
+
+本周数据：
+- 总专注时长：${weeklyData.totalDuration} 分钟
+- 完成任务数：${weeklyData.completedTasks.length}
+- 未完成任务数：${weeklyData.incompleteTasks.length}
+- 平均专注时长：${weeklyData.avgDuration.toFixed(1)} 分钟
+
+请提供：
+1. 数据分析结果
+2. 针对性的改进建议
+3. 鼓励话语`
+    }
+  ];
+  
+  // 获取 AI 反馈
+  const feedback = await getAIFeedback(messages);
+  
+  // 显示 AI 反馈
+  if (feedback.error) {
+    aiFeedback.innerHTML = `<p>${feedback.error}</p>`;
+  } else if (feedback.choices && feedback.choices.length > 0) {
+    aiFeedback.innerHTML = `<p>${feedback.choices[0].message.content}</p>`;
+  } else {
+    aiFeedback.innerHTML = '<p>获取 AI 反馈失败，请稍后再试</p>';
+  }
+}
+
+// 获取当天的专注数据
+function getDailyFocusData() {
+  const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+  const today = new Date().toISOString().split('T')[0];
+  
+  const todayTasks = tasks.filter(task => {
+    const taskDate = new Date(task.createdAt).toISOString().split('T')[0];
+    return taskDate === today;
+  });
+  
+  const completedTasks = todayTasks.filter(task => task.status === '已完成');
+  const incompleteTasks = todayTasks.filter(task => task.status === '未完成');
+  
+  const totalDuration = todayTasks.reduce((sum, task) => sum + task.duration, 0);
+  const avgDuration = todayTasks.length > 0 ? totalDuration / todayTasks.length : 0;
+  
+  return {
+    totalDuration,
+    completedTasks,
+    incompleteTasks,
+    avgDuration
+  };
+}
+
+// 获取本周的专注数据
+function getWeeklyFocusData() {
+  const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+  const now = new Date();
+  const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
+  weekStart.setHours(0, 0, 0, 0);
+  
+  const weeklyTasks = tasks.filter(task => {
+    const taskDate = new Date(task.createdAt);
+    return taskDate >= weekStart;
+  });
+  
+  const completedTasks = weeklyTasks.filter(task => task.status === '已完成');
+  const incompleteTasks = weeklyTasks.filter(task => task.status === '未完成');
+  
+  const totalDuration = weeklyTasks.reduce((sum, task) => sum + task.duration, 0);
+  const avgDuration = weeklyTasks.length > 0 ? totalDuration / weeklyTasks.length : 0;
+  
+  return {
+    totalDuration,
+    completedTasks,
+    incompleteTasks,
+    avgDuration
+  };
+}
+
+// 获取鼓励话语
+async function getEncouragement() {
+  const messages = [
+    {
+      role: 'user',
+      content: '请为完成专注任务的用户提供一句简短的鼓励话语，增强他们的专注动力。'
+    }
+  ];
+  
+  const feedback = await getAIFeedback(messages);
+  
+  if (feedback.choices && feedback.choices.length > 0) {
+    return feedback.choices[0].message.content;
+  }
+  
+  // 默认鼓励话语
+  const defaultEncouragements = [
+    '做得好！继续保持这种专注状态！',
+    '太棒了！你离目标又近了一步！',
+    '优秀的表现！坚持就是胜利！',
+    '很好！专注让你更高效！',
+    '完美！你正在成为更好的自己！'
+  ];
+  
+  return defaultEncouragements[Math.floor(Math.random() * defaultEncouragements.length)];
 }
 
 // 初始化应用

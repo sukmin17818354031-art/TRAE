@@ -313,6 +313,36 @@ main {
   font-style: italic;
 }
 
+/* AI 反馈模块 */
+.ai-feedback-content {
+  padding: 20px;
+  background-color: #f8f5f0;
+  border-radius: 10px;
+  min-height: 150px;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.analyze-btn {
+  padding: 12px 30px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 25px;
+  background-color: #8b6f47;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.analyze-btn:hover {
+  background-color: #a68a64;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 111, 71, 0.3);
+}
+
 /* 导出筛选模块 */
 .export-filters {
   display: grid;
