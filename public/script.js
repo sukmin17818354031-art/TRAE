@@ -536,7 +536,7 @@ function exportTasks() {
 async function getAIFeedback(messages) {
   try {
     // 调用后端 API 获取 AI 反馈
-    const response = await fetch('/api/ai-chat', {
+    const response = await fetch('/api/analyze', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
